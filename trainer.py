@@ -42,7 +42,8 @@ class Trainer(TrainerConfig):
 		"epoch":[],
 		"train_loss":[],
 		"eval_loss":[],
-		"best_loss_epoch":set()
+		"Iteration_loss":[],
+		"best_loss_epoch":[]
 		}
 		config = self.config
 		model = self.model
@@ -64,18 +65,18 @@ class Trainer(TrainerConfig):
 				y = y.to(self.device)
 
 				optimizer.zero_grad()
-				pred, loss = self.model(x, y)
+				pred, loss = model(x, y)
 
 				losses.append(loss.item())
 
-				if itr % 10 and itr>0:
+				if itr % 1000 and itr>0:
 					logger.info(f"Itr:{itr}, loss:{loss}")
 
 				loss.backward()
 				optimizer.step()
 				scheduler.step()
 
-			return float(np.mean(losses))
+			return float(np.mean(losses)), losses
 
 		def eval_loop_fn(eval_dataloader):
 			losses = []
@@ -85,7 +86,7 @@ class Trainer(TrainerConfig):
 				x = x.to(self.device)
 				y = y.to(self.device)
 
-				pred, loss = self.model(x,y)
+				pred, loss = model(x,y)
 				losses.append(loss.item())
 
 			return float(np.mean(losses))
@@ -108,8 +109,9 @@ class Trainer(TrainerConfig):
 			logger.info(f'==========Epoch:{epoch+1}/{config.max_epoch}==========')
 			train_state['epoch'].append(epoch+1)
 
-			train_loss = train_loop_fn(train_dataloader)
+			train_loss, Iterations_loss = train_loop_fn(train_dataloader)
 			train_state['train_loss'].append(train_loss)
+			train_state['Iteration_loss'].append(Iterations_loss)
 
 			eval_loss = eval_loop_fn(eval_dataloader)
 			train_state['eval_loss'].append(eval_loss)

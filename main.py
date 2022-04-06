@@ -56,7 +56,7 @@ betas_1 = float(config['training_config']['betas_1'])
 betas_2 = float(config['training_config']['betas_2'])
 ckpt_path = config['training_config']['ckpt_path']
 learning_curve_path = config['training_config']['learning_curve_path']
-
+vocab_size = train_dataset.get_vocab_size() if train_dataset.get_vocab_size() > eval_dataset.get_vocab_size() else eval_dataset.get_vocab_size() 
 #set model
 model_config = bertConfig(
 
@@ -64,7 +64,7 @@ model_config = bertConfig(
 							depth_enabler = depth_enabler,
 							n_head = attention_head,
 							n_encoders = num_encoders,
-							vocab_size = train_dataset.get_vocab_size(),
+							vocab_size = vocab_size,
 							tokens_size = block_size,)
 
 model = bertModel(model_config)
@@ -92,8 +92,13 @@ if __name__ == "__main__":
 	elapsed_time = time.time() - start
 	logger.info(f"Training time:{elapsed_time/60}m")
 
-	plot_learning_curve(f'{ckpt_path}_{max_epoch}epoch_train_state.json',
-						 f'{learning_curve_path}_{max_epoch}epoch_{depth_enabler}')
+	if max_epoch == 1:
+		plot_learning_curve_iter(f'{ckpt_path}_{max_epoch}epoch_train_state.json',
+						 	f'{learning_curve_path}_{max_epoch}iter_{depth_enabler}')
+
+	if max_epoch > 1:
+		plot_learning_curve_epoch(f'{ckpt_path}_{max_epoch}epoch_train_state.json',
+						 	f'{learning_curve_path}_{max_epoch}epoch_{depth_enabler}')
 
 
 

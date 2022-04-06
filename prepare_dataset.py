@@ -11,18 +11,18 @@ logger = logging.getLogger(__name__)
 class CharDataset(Dataset):
 	def __init__(self, data, block_size):
 		chars = sorted(list(set(data)))
+		#Add MASK token
+		chars.append('MASK')
+
 		data_size, vocab_size = len(data), len(chars)
 		logger.info('data has %d characters, %d unique.'%(data_size, vocab_size))
 
 		self.tokenizer = {ch:i for i, ch in enumerate(chars)}
 		self.decoder = {i:ch for i,ch in enumerate(chars)}
 
-		#Add MASK token
-		self.tokenizer['MASK'] = 103
-		self.decoder[103] = 'MASK'
-
 		self.block_size = block_size
 		self.vocab_size = vocab_size
+		self.mask_index = self.tokenizer['MASK']
 		self.data = data
 
 	def get_vocab_size(self):
@@ -33,7 +33,7 @@ class CharDataset(Dataset):
 		rand = torch.rand(input_ids.shape)
 		mask_arr = rand < 0.15
 
-		x = input_ids.masked_fill(mask_arr==True, 103)
+		x = input_ids.masked_fill(mask_arr==True, self.mask_index)
 		y = labels.masked_fill(mask_arr==False, -100)
 
 		return x, y
