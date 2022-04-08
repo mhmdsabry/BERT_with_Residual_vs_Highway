@@ -84,20 +84,34 @@ training_config = TrainerConfig(
 
 
 if __name__ == "__main__":
-	start = time.time()
+	if torch.cuda.is_available():
+		start = torch.cuda.Event(enable_timing=True)
+		end = torch.cuda.Event(enable_timing=True)
 	
-	trainer = Trainer(model, train_dataset, eval_dataset, training_config)
-	trainer.train()
-	
-	elapsed_time = time.time() - start
-	logger.info(f"Training time:{elapsed_time/60}m")
+		start.record()
+		trainer = Trainer(model, train_dataset, eval_dataset, training_config)
+		trainer.train()
+		end.record()
 
-	if max_epoch == 1:
-		plot_learning_curve_iter(f'{ckpt_path}_{max_epoch}epoch_train_state.json',
+		torch.cuda.synchronize()
+	
+		logger.info(f"Training time:{start.elapsed_time(end)}")
+
+	else:
+		start = time.time()
+
+		trainer = Trainer(model, train_dataset, eval_dataset, training_config)
+		trainer.train()
+
+		elapsed_time = time.time() - start
+		logger.info(f"Training time:{elapsed_time}")
+
+	
+
+	
+	plot_learning_curve_iter(f'{ckpt_path}_{max_epoch}epoch_train_state.json',
 						 	f'{learning_curve_path}_{max_epoch}iter_{depth_enabler}')
-
-	if max_epoch > 1:
-		plot_learning_curve_epoch(f'{ckpt_path}_{max_epoch}epoch_train_state.json',
+	plot_learning_curve_epoch(f'{ckpt_path}_{max_epoch}epoch_train_state.json',
 						 	f'{learning_curve_path}_{max_epoch}epoch_{depth_enabler}')
 
 

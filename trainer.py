@@ -69,7 +69,7 @@ class Trainer(TrainerConfig):
 
 				losses.append(loss.item())
 
-				if itr % 1000 and itr>0:
+				if itr % 500==0 and itr>0:
 					logger.info(f"Itr:{itr}, loss:{loss}")
 
 				loss.backward()

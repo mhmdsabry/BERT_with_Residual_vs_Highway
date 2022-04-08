@@ -1,5 +1,6 @@
 import math 
 import json
+import itertools
 
 import random, os
 import numpy as np 
@@ -43,7 +44,12 @@ def plot_learning_curve_epoch(state, saving_path=None):
 def plot_learning_curve_iter(state, saving_path=None):
 	state = json.load(open(state))
 
-	iters_loss = state.get('Iteration_loss')[0]
+	iters_loss = state.get('Iteration_loss')
+	if len(iters_loss)>1:
+		iters_loss = list(itertools.chain(*iters_loss)) #glue iteration lists of we have mutli-epoch
+	else:
+		iters_loss = iters_loss[0]
+
 	iters = [i+1 for i in range(len(iters_loss))]
 
 	fig = plt.figure()
