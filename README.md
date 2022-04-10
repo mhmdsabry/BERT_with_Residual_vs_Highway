@@ -27,13 +27,11 @@ Comparing between residual stream and highway stream in transformers(BERT) .
 ### Results
 #### Residual BERT:
 * num params: 2.535328e+07
-* training time:
-* best loss:
+
 
 #### Highway BERT:
 * num params: 2.955578e+07
-* training time:
-* best loss:
+
 
 ### Concluding Remarks
 
