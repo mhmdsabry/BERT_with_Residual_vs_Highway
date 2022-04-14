@@ -32,12 +32,12 @@ The following results are preliminary, just to show basic differences, also chec
 #### Residual BERT
 * num params: 2.535328e+07
 * Training time: 9847396.0ms
-* best loss: 4.2794
+* loss: 4.2794
 
 #### Highway BERT
 * num params: 2.955578e+07
 * Training time: 10547382.0ms
-* best loss: 4.3240
+* loss: 4.3240
 
 ### Things to be Done
 
